@@ -2,11 +2,13 @@ import pygame
 import time
 import random
 
+pygame.font.init()
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 960
 PLAYER_WIDTH, PLAYER_HEIGHT = 20,40
 PLAYER_COLOR = (0,255,110)
-
+FONT_LIST = pygame.font.get_fonts()
+FONT = pygame.font.SysFont(FONT_LIST[2],50)
 
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space Invaders")
@@ -26,6 +28,13 @@ def draw(player):
     # Player
 
     pygame.draw.rect(WINDOW,PLAYER_COLOR,player)
+
+    # Score
+    score = FONT.render(f"Score: {round(elapsed_time)}",1, "white")
+    WINDOW.blit(score,(WINDOW_WIDTH - 250, 50))
+
+
+
     pygame.display.update()
 
 
@@ -34,7 +43,15 @@ def draw(player):
 def run():
     exit = False
     player = pygame.Rect(WINDOW_WIDTH / 2 - PLAYER_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT)
+
+    start_time = time.time()
+    elapsed_time = 0
+
+    clock = pygame.time.Clock()
+
     while not exit:
+        clock.tick(FPS)
+        elapsed_time = time.time() - start_time
         # Check for quit
         if len(pygame.event.get(pygame.QUIT)) > 0:
             # for event in pygame.event.get():
@@ -42,7 +59,7 @@ def run():
             return True
 
         # Update Screen
-        draw(player)
+        draw(player, elapsed_time)
 
         # Player Movement
         keys = pygame.key.get_pressed()
