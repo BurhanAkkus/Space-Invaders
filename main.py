@@ -31,7 +31,7 @@ def draw(player,elapsed_time):
 
     # Score
     score = FONT.render(f"Score: {round(elapsed_time)}",1, "white")
-    WINDOW.blit(score,(WINDOW_WIDTH - 250, 50))
+    WINDOW.blit(score,(WINDOW_WIDTH - 300, 50))
 
 
 
