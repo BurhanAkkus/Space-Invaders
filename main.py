@@ -46,13 +46,19 @@ def apply_gravity(obstacles):
     obstacles = [x for x in obstacles if x.is_destroyed == False]
     return obstacles
 
+def player_is_hit(obstacles,player):
+    for index,obstacle in enumerate(obstacles):
+        if obstacle.hit_box.colliderect(player):
+            return index
+    return -1
 
 pygame.font.init()
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 960
 PLAYER_WIDTH, PLAYER_HEIGHT = 20,40
 PLAYER_COLOR = (0,255,110)
-OBSTACLE_COLOR = (255,0,110)
+OBSTACLE_COLOR = (80,0,230)
+COLLISION_COLOR = (255,55,55)
 
 FONT_LIST = pygame.font.get_fonts()
 FONT = pygame.font.SysFont(FONT_LIST[2],50)
@@ -64,6 +70,32 @@ BACKGROUND = pygame.transform.scale(pygame.image.load("Assets/Background/Orion_N
 
 FPS = 60
 PLAYER_SPEED = 300 // FPS
+
+def game_over_screen(player,obstacles,obstacle_idx,score):
+    # Background
+    WINDOW.blit(BACKGROUND,(0,0))
+
+    # Environment
+    obstacle = obstacles[obstacle_idx]
+    obstacle_object = pygame.Rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+    pygame.draw.rect(WINDOW, COLLISION_COLOR, obstacle_object)
+    # Player
+    pygame.draw.rect(WINDOW,PLAYER_COLOR,player)
+
+    # Score
+    score = FONT.render(f"Score: {round(score)}", 1, "white")
+    WINDOW.blit(score, (WINDOW_WIDTH / 2 - WINDOW_WIDTH / 12, WINDOW_HEIGHT / 4))
+
+    # Press Enter To Restart
+    enter_to_replay = FONT.render(f"Press ENTER to play again!", 1, "white")
+    WINDOW.blit(enter_to_replay,(WINDOW_WIDTH * 7 / 24, WINDOW_HEIGHT / 2))
+
+    # Press Any Key To Exit
+    any_key_to_exit = FONT.render(f"Press Any Key to exit!", 1, "white")
+    WINDOW.blit(any_key_to_exit,(WINDOW_WIDTH * 8 / 24, WINDOW_HEIGHT * 3 / 4))
+
+
+    pygame.display.update()
 
 
 def draw(player,elapsed_time,obstacles):
@@ -88,37 +120,60 @@ def draw(player,elapsed_time,obstacles):
 
 
 def run():
-    exit = False
     player = pygame.Rect(WINDOW_WIDTH / 2 - PLAYER_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT)
 
-    start_time = time.time()
-    elapsed_time = 0
 
     clock = pygame.time.Clock()
-    obstacles = []
-    while not exit:
-        clock.tick(FPS)
-        elapsed_time = time.time() - start_time
-        # Check for quit
-        if len(pygame.event.get(pygame.QUIT)) > 0:
-            # for event in pygame.event.get():
-            #    if event.type == pygame.QUIT:
-            return True
+    restart = True
+    while restart:
+        restart = False
 
-        # Update Screen
-        draw(player, elapsed_time,obstacles)
+        # Initialization
+        start_time = time.time()
+        elapsed_time = 0
+        obstacles = []
 
-        # Environment
-        apply_gravity(obstacles)
-        obstacles.extend(generate_obstacles(random.randint(0,20) // 10 ))
+        # Game Loop
+        while True:
+            clock.tick(FPS)
+            elapsed_time = time.time() - start_time
 
-        # Player Movement
-        keys = pygame.key.get_pressed()
-        player_movement = 0
-        player_movement = player_movement - (PLAYER_SPEED if keys[pygame.K_LEFT] else 0)
-        player_movement = player_movement + (PLAYER_SPEED if keys[pygame.K_RIGHT] else 0)
+            # Check for quit
+            if len(pygame.event.get(pygame.QUIT)) > 0:
+                # for event in pygame.event.get():
+                #    if event.type == pygame.QUIT:
+                return True
 
-        player.x = min(max(player.x + (player_movement //1),0),WINDOW_WIDTH - PLAYER_WIDTH)
+            # Update Screen
+            draw(player, elapsed_time,obstacles)
+
+            # Check for Game Over
+            collision_obstacle = player_is_hit(obstacles,player)
+
+            if(collision_obstacle > -1):
+                game_over_screen(player,obstacles,collision_obstacle,elapsed_time)
+                while True:
+                    pygame.event.clear()
+                    event = pygame.event.wait()
+                    if event.type == pygame.QUIT:
+                        return True
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_KP_ENTER :
+                            restart = True
+                        break
+                break
+
+            # Environment
+            apply_gravity(obstacles)
+            obstacles.extend(generate_obstacles(random.randint(0,20) // 10 ))
+
+            # Player Movement
+            keys = pygame.key.get_pressed()
+            player_movement = 0
+            player_movement = player_movement - (PLAYER_SPEED if keys[pygame.K_LEFT] else 0)
+            player_movement = player_movement + (PLAYER_SPEED if keys[pygame.K_RIGHT] else 0)
+
+            player.x = min(max(player.x + (player_movement //1),0),WINDOW_WIDTH - PLAYER_WIDTH)
 
 
     print("Game Closing")
