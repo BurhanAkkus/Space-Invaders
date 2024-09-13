@@ -57,7 +57,8 @@ pygame.font.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1200, 960
 PLAYER_WIDTH, PLAYER_HEIGHT = 20,40
 PLAYER_COLOR = (0,255,110)
-OBSTACLE_COLOR = (255,0,110)
+OBSTACLE_COLOR = (80,0,230)
+COLLISION_COLOR = (255,55,55)
 
 FONT_LIST = pygame.font.get_fonts()
 FONT = pygame.font.SysFont(FONT_LIST[2],50)
@@ -119,11 +120,8 @@ def draw(player,elapsed_time,obstacles):
 
 
 def run():
-    exit = False
     player = pygame.Rect(WINDOW_WIDTH / 2 - PLAYER_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT)
 
-    start_time = time.time()
-    elapsed_time = 0
 
     clock = pygame.time.Clock()
     restart = True
