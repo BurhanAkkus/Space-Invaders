@@ -10,11 +10,13 @@ class Obstacle:
         self.fall_speed = fall_speed
         self.x = x
         self.y = y
+        self.hit_box = pygame.Rect(x,y,width,height)
         self.is_destroyed = False
 
     def fall(self):
         """This method simulates the obstacle falling by updating its height based on fall_speed."""
         self.y += self.fall_speed
+        self.hit_box.update(self.x,self.y,self.width,self.height)
         if self.y > WINDOW_HEIGHT:
              self.is_destroyed = True
              # Prevent height from going below 0 (ground level)
