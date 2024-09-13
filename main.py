@@ -24,6 +24,26 @@ class Obstacle:
         return f"Obstacle(width={self.width}, height={self.height}, fall_speed={self.fall_speed}, x={self.x},y={self.y})"
 
 
+def generate_obstacles(n):
+    new_obstacles = []
+    for i in range(n):
+        new_obstacles.append(generate_obstacle())
+    return new_obstacles
+
+def generate_obstacle():
+    width = random.randint(10,36)
+    length = random.randint(20,130)
+    fall_speed = random.randint(2,300 // FPS)
+    x = random.randint(0,WINDOW_WIDTH - width)
+    y = -length #Margin for graceful fall
+    return Obstacle(width,length ,fall_speed,x,y)
+
+def apply_gravity(obstacles):
+    for obstacle in obstacles:
+        obstacle.fall()
+    obstacles = [x for x in obstacles if x.is_destroyed == False]
+    return obstacles
+
 
 pygame.font.init()
 
@@ -64,25 +84,6 @@ def draw(player,elapsed_time,obstacles):
     pygame.display.update()
 
 
-def generate_obstacles(n):
-    new_obstacles = []
-    for i in range(n):
-        new_obstacles.append(generate_obstacle())
-    return new_obstacles
-
-def generate_obstacle():
-    width = random.randint(10,36)
-    length = random.randint(20,130)
-    fall_speed = random.randint(2,300 // FPS)
-    x = random.randint(0,WINDOW_WIDTH - width)
-    y = -length #Margin for graceful fall
-    return Obstacle(width,length ,fall_speed,x,y)
-
-def apply_gravity(obstacles):
-    for obstacle in obstacles:
-        obstacle.fall()
-    obstacles = [x for x in obstacles if x.is_destroyed == False]
-    return obstacles
 
 def run():
     exit = False
