@@ -16,7 +16,7 @@ pygame.display.set_caption("Space Invaders")
 BACKGROUND = pygame.transform.scale(pygame.image.load("Assets/Background/Orion_Nebula.jpg"),(WINDOW_WIDTH,WINDOW_HEIGHT))
 
 FPS = 60
-PLAYER_SPEED = 1
+PLAYER_SPEED = 300 // FPS
 
 
 def draw(player,elapsed_time):
