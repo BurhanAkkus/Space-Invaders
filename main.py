@@ -146,8 +146,8 @@ def run():
                 #    if event.type == pygame.QUIT:
                 return True
 
-        # Update Screen
-        draw(player, elapsed_time,obstacles)
+            # Update Screen
+            draw(player, elapsed_time,obstacles)
 
             # Check for Game Over
             collision_obstacle = player_is_hit(obstacles,player)
